@@ -3,275 +3,437 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>RAG Onboarding Agent — Isha</title>
-<meta name="description" content="Case study: building a RAG agent to accelerate healthcare-system onboarding at Qure.ai — by Isha, Product Manager.">
+<title>Isha — AI-Native PM Case Studies</title>
+<meta name="description" content="Three case studies on how Isha leverages AI as a Product Manager: a RAG onboarding agent, an LLM-powered clinical workflow, and automated product demos and decks.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=TASA+Orbiter:wght@500;600;700;800&display=swap" rel="stylesheet">
 <style>
 :root{
-  --bg:#f6f7fb; --paper:#ffffff; --ink:#0d1526; --ink2:#46506a; --ink3:#7a839a;
-  --line:#e3e7f0; --accent:#2563eb; --accent-soft:#e8efff; --accent-ink:#1d4ed8;
-  --mint:#0f9d76; --mint-soft:#e5f6f0; --amber:#b26b00; --amber-soft:#fff4e0;
+  --azure:#1566f0; --azure-600:#0e55cb; --azure-50:#f5f9ff; --azure-100:#d6e4ff;
+  --navy:#012652; --navy-2:#0a1f44;
+  --emerald:#00995a; --emerald-50:#e6f4ec;
+  --topaz:#b86e00; --topaz-50:#fff4e0;
+  --bg:#f6f8fc; --paper:#ffffff; --ink:#0b1b33; --ink2:#41506a; --ink3:#77839a; --line:#e2e8f2;
+  --head:"TASA Orbiter","Inter",Arial,sans-serif;
+  --text:"Inter",Arial,sans-serif;
 }
 @media (prefers-color-scheme: dark){
   :root:not([data-theme="light"]){
-    --bg:#0b1020; --paper:#121a2e; --ink:#eef2fb; --ink2:#b4bdd3; --ink3:#8590aa;
-    --line:#26304a; --accent:#6b9bff; --accent-soft:#1a2747; --accent-ink:#9dbcff;
-    --mint:#3fd0a4; --mint-soft:#123329; --amber:#f2b552; --amber-soft:#3a2a10;
+    --azure:#5b93ff; --azure-600:#8bb3ff; --azure-50:#0f1d3a; --azure-100:#1b3263;
+    --emerald:#3ccf8e; --emerald-50:#0f2e22; --topaz:#f2b552; --topaz-50:#33260f;
+    --bg:#060f22; --paper:#0d1a33; --ink:#eef3fc; --ink2:#b3bfd6; --ink3:#8090ab; --line:#1f2f4f;
   }
 }
 :root[data-theme="dark"]{
-  --bg:#0b1020; --paper:#121a2e; --ink:#eef2fb; --ink2:#b4bdd3; --ink3:#8590aa;
-  --line:#26304a; --accent:#6b9bff; --accent-soft:#1a2747; --accent-ink:#9dbcff;
-  --mint:#3fd0a4; --mint-soft:#123329; --amber:#f2b552; --amber-soft:#3a2a10;
+  --azure:#5b93ff; --azure-600:#8bb3ff; --azure-50:#0f1d3a; --azure-100:#1b3263;
+  --emerald:#3ccf8e; --emerald-50:#0f2e22; --topaz:#f2b552; --topaz-50:#33260f;
+  --bg:#060f22; --paper:#0d1a33; --ink:#eef3fc; --ink2:#b3bfd6; --ink3:#8090ab; --line:#1f2f4f;
 }
 *{box-sizing:border-box;margin:0;padding:0}
-body{background:var(--bg);color:var(--ink);font:400 14.5px/1.55 Inter,system-ui,sans-serif;-webkit-font-smoothing:antialiased}
-.page{max-width:860px;margin:32px auto;background:var(--paper);border:1px solid var(--line);border-radius:18px;padding:48px 52px}
-h1,h2,h3{font-family:"Space Grotesk",Inter,sans-serif;letter-spacing:-.01em}
-.eyebrow{font:600 11px/1 Inter;letter-spacing:.14em;text-transform:uppercase;color:var(--accent)}
-h1{font-size:34px;line-height:1.12;margin:12px 0 10px;font-weight:700}
-.sub{font-size:16px;color:var(--ink2);max-width:640px}
-.meta{display:flex;flex-wrap:wrap;gap:8px;margin-top:18px}
-.chip{font:500 12px/1 Inter;padding:7px 11px;border-radius:999px;background:var(--accent-soft);color:var(--accent-ink)}
-.chip.n{background:transparent;border:1px solid var(--line);color:var(--ink2)}
-section{margin-top:30px}
-.label{display:flex;align-items:center;gap:10px;margin-bottom:10px}
-.num{font:700 12px/1 "Space Grotesk",sans-serif;color:var(--accent);background:var(--accent-soft);border-radius:6px;padding:5px 7px}
-h2{font-size:19px;font-weight:600}
-p{color:var(--ink2)}
-p strong,li strong{color:var(--ink);font-weight:600}
-.grid2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
-.card{border:1px solid var(--line);border-radius:12px;padding:16px 18px}
-.card h3{font-size:14px;margin-bottom:6px}
-ul{list-style:none}
-ul.b li{position:relative;padding-left:16px;color:var(--ink2);margin:5px 0}
-ul.b li::before{content:"";position:absolute;left:2px;top:.62em;width:6px;height:6px;border-radius:2px;background:var(--accent)}
-.callout{border-left:3px solid var(--accent);background:var(--accent-soft);border-radius:0 10px 10px 0;padding:12px 16px;color:var(--ink);font-weight:500}
-.diagram{border:1px solid var(--line);border-radius:14px;padding:18px 12px;margin-top:14px;overflow-x:auto}
-.diagram svg{display:block;width:100%;min-width:600px;height:auto}
-.diagram .cap{font-size:11.5px;color:var(--ink3);text-align:center;margin-top:8px}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--ink);font:400 15px/1.6 var(--text);-webkit-font-smoothing:antialiased}
+h1,h2,h3,h4{font-family:var(--head);letter-spacing:-.01em;line-height:1.15}
+a{color:inherit}
+.wrap{max-width:980px;margin:0 auto;padding:0 24px}
+
+/* hero */
+.hero{background:var(--navy);color:#fff;position:relative;overflow:hidden}
+.hero::before{content:"";position:absolute;right:-120px;top:-160px;width:520px;height:520px;border-radius:50%;background:radial-gradient(circle,rgba(21,102,240,.55),rgba(21,102,240,0) 70%)}
+.hero::after{content:"";position:absolute;right:60px;top:40px;width:180px;height:180px;background:linear-gradient(135deg,#1566f0,#3d8bff);clip-path:polygon(38% 0,100% 0,62% 100%,0 100%);opacity:.9}
+.hero .wrap{position:relative;z-index:1;padding-top:56px;padding-bottom:52px}
+.kicker{font:600 12px/1 var(--text);letter-spacing:.16em;text-transform:uppercase;color:#8fb6ff}
+.hero h1{font-size:44px;font-weight:700;margin:14px 0 14px;max-width:640px}
+.hero h1 em{font-style:normal;color:#6aa2ff}
+.hero p{color:#c4d3ee;max-width:600px;font-size:16.5px}
+.who{display:flex;flex-wrap:wrap;gap:8px;margin-top:22px}
+.pill{font:500 12.5px/1 var(--text);padding:8px 13px;border-radius:999px;border:1px solid rgba(255,255,255,.22);color:#e6eefc}
+.pill.solid{background:var(--azure);border-color:var(--azure);color:#fff}
+
+/* nav */
+.nav{position:sticky;top:0;z-index:5;background:color-mix(in srgb,var(--paper) 92%,transparent);backdrop-filter:blur(8px);border-bottom:1px solid var(--line)}
+.nav .wrap{display:flex;gap:6px;overflow-x:auto;padding-top:10px;padding-bottom:10px}
+.nav a{white-space:nowrap;text-decoration:none;font:600 13px/1 var(--text);color:var(--ink2);padding:9px 14px;border-radius:8px}
+.nav a:hover{background:var(--azure-50);color:var(--azure)}
+.nav .n{color:var(--azure);margin-right:6px;font-family:var(--head)}
+
+/* summary strip */
+.strip{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin:32px 0 8px}
+.strip a{display:block;text-decoration:none;background:var(--paper);border:1px solid var(--line);border-radius:14px;padding:18px;transition:border-color .15s,transform .15s}
+.strip a:hover{border-color:var(--azure);transform:translateY(-2px)}
+.strip .t{font:700 11px/1 var(--text);letter-spacing:.12em;text-transform:uppercase;color:var(--azure)}
+.strip h3{font-size:17px;margin:10px 0 6px}
+.strip p{font-size:13.5px;color:var(--ink2)}
+
+/* case */
+.case{background:var(--paper);border:1px solid var(--line);border-radius:20px;padding:40px 44px;margin:28px 0;scroll-margin-top:70px}
+.case-head{display:flex;gap:18px;align-items:flex-start;margin-bottom:22px}
+.badge{flex:none;width:52px;height:52px;border-radius:14px;background:var(--azure);color:#fff;display:grid;place-items:center;font:700 20px/1 var(--head)}
+.case-head .t{font:600 12px/1 var(--text);letter-spacing:.12em;text-transform:uppercase;color:var(--ink3)}
+.case h2{font-size:27px;margin:8px 0 6px}
+.case .lede{color:var(--ink2);font-size:15.5px;max-width:720px}
+.tags{display:flex;flex-wrap:wrap;gap:6px;margin-top:12px}
+.tag{font:600 11.5px/1 var(--text);padding:6px 10px;border-radius:6px;background:var(--azure-50);color:var(--azure-600)}
+
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:18px}
+.box{border:1px solid var(--line);border-radius:12px;padding:16px 18px}
+.box h4{font-size:13px;letter-spacing:.08em;text-transform:uppercase;color:var(--ink3);font-family:var(--text);font-weight:700;margin-bottom:8px}
+.box p{color:var(--ink2);font-size:14.5px}
+.box.why{background:var(--azure-50);border-color:var(--azure-100)}
+.box.why p{color:var(--ink)}
+
+ul.b{list-style:none}
+ul.b li{position:relative;padding-left:18px;color:var(--ink2);font-size:14.5px;margin:6px 0}
+ul.b li::before{content:"";position:absolute;left:0;top:.6em;width:8px;height:8px;background:var(--azure);clip-path:polygon(40% 0,100% 0,60% 100%,0 100%)}
+ul.b li strong{color:var(--ink);font-weight:600}
+
+.flow{margin-top:18px;border:1px solid var(--line);border-radius:14px;padding:18px 14px 12px;overflow-x:auto}
+.flow svg{display:block;width:100%;min-width:640px;height:auto}
+.flow .cap{font-size:12px;color:var(--ink3);text-align:center;margin-top:6px}
+
+.sub{font:700 13px/1 var(--text);letter-spacing:.08em;text-transform:uppercase;color:var(--ink3);margin:24px 0 10px}
 .role{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
 .role div{border:1px solid var(--line);border-radius:10px;padding:12px 14px;font-size:13.5px;color:var(--ink2)}
-.role b{display:block;color:var(--ink);font-family:"Space Grotesk",Inter,sans-serif;font-size:13.5px;margin-bottom:3px}
+.role b{display:block;color:var(--ink);font-family:var(--head);font-size:14.5px;margin-bottom:3px}
+
 .impact{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
-.impact div{background:var(--mint-soft);border-radius:12px;padding:14px;font-size:13px;color:var(--ink)}
-.impact b{display:block;font-family:"Space Grotesk",Inter,sans-serif;color:var(--mint);font-size:13px;margin-bottom:4px;text-transform:uppercase;letter-spacing:.06em}
-table{width:100%;border-collapse:collapse;font-size:13px}
-th,td{text-align:left;padding:8px 10px;border-bottom:1px solid var(--line);vertical-align:top}
-th{font:600 11px/1.2 Inter;letter-spacing:.08em;text-transform:uppercase;color:var(--ink3)}
-td:first-child{color:var(--ink);font-weight:600;white-space:nowrap}
-td{color:var(--ink2)}
-.tag{display:inline-block;font:600 10px/1 Inter;letter-spacing:.06em;text-transform:uppercase;padding:4px 7px;border-radius:5px;background:var(--amber-soft);color:var(--amber);margin-left:6px;vertical-align:1px}
-.learn{display:grid;grid-template-columns:1fr 1fr;gap:10px;counter-reset:l}
-.learn div{border:1px solid var(--line);border-radius:10px;padding:12px 14px 12px 44px;position:relative;font-size:13.5px;color:var(--ink2)}
-.learn div::before{counter-increment:l;content:counter(l);position:absolute;left:14px;top:12px;font:700 15px/1 "Space Grotesk",sans-serif;color:var(--accent)}
+.impact div{background:var(--emerald-50);border-radius:12px;padding:14px;font-size:13.5px;color:var(--ink)}
+.impact b{display:block;font:700 11.5px/1.2 var(--text);letter-spacing:.08em;text-transform:uppercase;color:var(--emerald);margin-bottom:6px}
+
+.evals{display:flex;flex-wrap:wrap;gap:8px}
+.evals span{font-size:13px;color:var(--ink2);border:1px dashed var(--line);border-radius:8px;padding:7px 10px}
+.evals span b{color:var(--topaz);font:700 10px/1 var(--text);letter-spacing:.08em;text-transform:uppercase;margin-right:6px}
+.note{font-size:12.5px;color:var(--ink3);margin-top:8px}
+
+/* common */
+.section-title{font-size:26px;margin:44px 0 6px}
+.section-sub{color:var(--ink2);margin-bottom:18px}
+.learn{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;counter-reset:l}
+.learn div{background:var(--paper);border:1px solid var(--line);border-radius:12px;padding:16px 18px 16px 56px;position:relative;color:var(--ink2);font-size:14.5px}
+.learn div::before{counter-increment:l;content:"0" counter(l);position:absolute;left:18px;top:16px;font:700 17px/1 var(--head);color:var(--azure)}
 .learn b{color:var(--ink)}
-.why{margin-top:30px;background:var(--ink);color:var(--paper);border-radius:16px;padding:24px 26px}
-.why h2{color:var(--paper);font-size:19px;margin-bottom:12px}
-.why .g{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
-.why .g div{font-size:13px;opacity:.86}
-.why .g b{display:block;font-family:"Space Grotesk",Inter,sans-serif;font-size:13.5px;opacity:1;margin-bottom:4px;color:var(--paper)}
-.foot{margin-top:18px;font-size:11.5px;color:var(--ink3);display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px}
-.pdf{color:var(--accent);text-decoration:none;font-weight:600}
-.pb{height:0}
-@media (max-width:700px){
-  .page{margin:0;border-radius:0;border:0;padding:28px 16px}
-  h1{font-size:27px}
-  .grid2,.learn{grid-template-columns:1fr}
+
+.rzp{background:var(--navy);color:#fff;border-radius:20px;padding:36px 40px;margin:44px 0 24px;position:relative;overflow:hidden}
+.rzp::after{content:"";position:absolute;right:-30px;bottom:-30px;width:160px;height:160px;background:linear-gradient(135deg,#1566f0,#3d8bff);clip-path:polygon(38% 0,100% 0,62% 100%,0 100%);opacity:.35}
+.rzp h2{font-size:26px;margin-bottom:6px}
+.rzp > p{color:#c4d3ee;margin-bottom:20px;max-width:640px}
+.rzp .g{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;position:relative;z-index:1}
+.rzp .g div{font-size:13.5px;color:#c4d3ee}
+.rzp .g b{display:block;font-family:var(--head);font-size:15px;color:#fff;margin-bottom:6px}
+.rzp .g i{font-style:normal;display:block;font:700 11px/1 var(--text);letter-spacing:.1em;color:#6aa2ff;margin-bottom:8px}
+
+footer{color:var(--ink3);font-size:12.5px;padding:8px 0 40px;display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px}
+.print{background:none;border:1px solid var(--line);color:var(--ink2);border-radius:8px;padding:6px 10px;font:600 12px/1 var(--text);cursor:pointer}
+
+@media (max-width:760px){
+  .wrap{padding:0 16px}
+  .hero .wrap{padding-top:40px;padding-bottom:40px}
+  .hero::after{width:100px;height:100px;right:16px;top:18px;opacity:.5}
+  .hero h1{font-size:32px}
+  .strip,.grid,.learn{grid-template-columns:1fr}
   .role{grid-template-columns:1fr}
-  .impact,.why .g{grid-template-columns:1fr 1fr}
+  .impact,.rzp .g{grid-template-columns:1fr 1fr}
+  .case{padding:26px 18px;border-radius:16px}
+  .case-head{flex-direction:column;gap:12px}
+  .case h2{font-size:23px}
+  .rzp{padding:28px 20px}
 }
-@page{size:A4;margin:0}
 @media print{
-  html{zoom:.9}
-  :root{--bg:#fff;--paper:#fff;--ink:#0d1526;--ink2:#46506a;--ink3:#7a839a;--line:#e3e7f0;--accent:#2563eb;--accent-soft:#e8efff;--accent-ink:#1d4ed8;--mint:#0f9d76;--mint-soft:#e5f6f0;--amber:#b26b00;--amber-soft:#fff4e0}
-  body{font-size:12px;line-height:1.42;-webkit-print-color-adjust:exact;print-color-adjust:exact}
-  .page{margin:0;border:0;border-radius:0;max-width:none;padding:30px 40px}
-  h1{font-size:28px;margin:8px 0 6px}
-  .sub{font-size:14px}
-  .meta{margin-top:12px}
-  section{margin-top:15px}
-  .card{padding:11px 14px}
-  .diagram{padding:12px 10px;margin-top:10px}
-  .pb{break-after:page}
-  .why{padding:18px 20px;margin-top:18px}
-  .noprint{display:none}
-  .pb + section{margin-top:0}
-  .role div,.learn div{padding:9px 12px}
-  .learn div{padding-left:38px}
-  .impact div{padding:10px 12px}
-  .why .g{gap:12px}
-  .foot{margin-top:10px}
-  .why .g div,.role div,.learn div,.impact div{font-size:12px}
-  td,th{padding:6px 8px;font-size:12px}
+  :root{--bg:#fff;--paper:#fff;--ink:#0b1b33;--ink2:#41506a;--ink3:#77839a;--line:#e2e8f2;--azure:#1566f0;--azure-600:#0e55cb;--azure-50:#f5f9ff;--azure-100:#d6e4ff;--emerald:#00995a;--emerald-50:#e6f4ec;--topaz:#b86e00;--topaz-50:#fff4e0}
+  body{-webkit-print-color-adjust:exact;print-color-adjust:exact;font-size:12.5px}
+  html{zoom:.82}
+  .nav,.print,.strip{display:none}
+  .case{break-before:page;border:0;padding:12px 0;margin:0}
+  .rzp,.learn div,.box,.role div,.impact div{break-inside:avoid}
 }
 </style>
 </head>
 <body>
-<main class="page">
 
-<header>
-  <div class="eyebrow">AI Product Case Study · Qure.ai</div>
-  <h1>Building a RAG Agent to Accelerate Healthcare-System Onboarding</h1>
-  <p class="sub">How I leveraged AI as a Product Manager to turn fragmented knowledge into an actionable internal workflow.</p>
-  <div class="meta">
-    <span class="chip">Isha · Product Manager</span>
-    <span class="chip n">RAG · LLM agents · Evals</span>
-    <span class="chip n">Internal tooling · Enterprise healthcare</span>
-    <a class="chip n noprint pdf" href="#" onclick="window.print();return false;">Save as PDF ↓</a>
+<header class="hero">
+  <div class="wrap">
+    <div class="kicker">AI-Native Product Management · Case studies</div>
+    <h1>I find broken workflows and <em>build the AI</em> that fixes them.</h1>
+    <p>Three examples from my work in clinical AI at Qure.ai: a knowledge agent, an LLM-powered clinical workflow, and an automated demo-and-deck pipeline. Each one went from problem to a working tool.</p>
+    <div class="who">
+      <span class="pill solid">Isha · Product Manager</span>
+      <span class="pill">IIT Bombay</span>
+      <span class="pill">Qure.ai · Care.Fi</span>
+      <span class="pill">Applying: AI PM, Central AI, Razorpay</span>
+    </div>
   </div>
 </header>
 
-<section>
-  <div class="label"><span class="num">01</span><h2>Problem</h2></div>
-  <div class="grid2">
-    <div class="card">
-      <h3>Knowledge was scattered</h3>
-      <p>Onboarding a new US healthcare system at Qure.ai means navigating product, technical, integration, deployment and process documentation that lives in many places.</p>
-    </div>
-    <div class="card">
-      <h3>Experts became the bottleneck</h3>
-      <p>New team members leaned on experienced colleagues to find the right answer. The same questions repeated, senior time was pulled away, and onboarding slowed down.</p>
+<nav class="nav" aria-label="Case studies">
+  <div class="wrap">
+    <a href="#rag"><span class="n">01</span>RAG onboarding agent</a>
+    <a href="#llm"><span class="n">02</span>LLM clinical workflow</a>
+    <a href="#demo"><span class="n">03</span>Automated demos &amp; decks</a>
+    <a href="#learnings">Learnings</a>
+    <a href="#razorpay">Why Razorpay</a>
+  </div>
+</nav>
+
+<main class="wrap">
+
+<div class="strip">
+  <a href="#rag"><div class="t">01 · Knowledge</div><h3>RAG onboarding agent</h3><p>Turned scattered onboarding docs into instant, grounded answers.</p></a>
+  <a href="#llm"><div class="t">02 · Workflow</div><h3>LLM-powered clinical tool</h3><p>Designed prompts, evals and interactions that clinicians could trust.</p></a>
+  <a href="#demo"><div class="t">03 · Automation</div><h3>Automated demos &amp; decks</h3><p>Replaced manual demo and deck prep with an AI-generated pipeline.</p></a>
+</div>
+
+<!-- ================= CASE 1 ================= -->
+<article class="case" id="rag">
+  <div class="case-head">
+    <div class="badge">01</div>
+    <div>
+      <div class="t">Internal knowledge · RAG agent</div>
+      <h2>A RAG agent to accelerate healthcare-system onboarding</h2>
+      <p class="lede">Turning fragmented product, technical and deployment knowledge into an assistant that gives grounded answers, so new team members stop waiting on experts.</p>
+      <div class="tags"><span class="tag">RAG</span><span class="tag">Retrieval design</span><span class="tag">Prompting</span><span class="tag">Evals</span></div>
     </div>
   </div>
-</section>
 
-<section>
-  <div class="label"><span class="num">02</span><h2>Opportunity: why RAG, not a generic LLM</h2></div>
-  <p class="callout">The answers people needed were company-specific, current and contextual, which a general-purpose model doesn't know. Retrieval-augmented generation lets the agent pull from approved internal sources first, so answers stay grounded in what Qure.ai actually does.</p>
-  <ul class="b" style="margin-top:10px">
-    <li><strong>Grounded:</strong> answers come from approved internal docs, not model guesswork.</li>
-    <li><strong>Current:</strong> update the knowledge base and the answers change with it. No retraining.</li>
-    <li><strong>Traceable:</strong> the relevant context is surfaced with the answer, so users can verify it.</li>
-  </ul>
-</section>
+  <div class="grid">
+    <div class="box">
+      <h4>Problem</h4>
+      <p>Onboarding a new US healthcare system meant navigating scattered product, technical, integration, deployment and process documentation. New team members depended on experienced colleagues for answers, the same questions kept repeating, and onboarding slowed down.</p>
+    </div>
+    <div class="box why">
+      <h4>Why RAG, not a generic LLM</h4>
+      <p>The answers were company-specific, current and contextual, which a general model doesn't know. Retrieval keeps every answer grounded in approved internal sources and traceable back to them, and the knowledge base can be updated without retraining.</p>
+    </div>
+  </div>
 
-<section>
-  <div class="label"><span class="num">03</span><h2>Solution: a retrieval-grounded onboarding assistant</h2></div>
-  <p>Team members ask onboarding questions in plain language. The agent retrieves the right internal knowledge, the LLM answers from it, and users troubleshoot and navigate complex documentation without waiting on a subject-matter expert.</p>
-  <div class="diagram">
-    <svg viewBox="0 0 760 154" role="img" aria-label="User asks a query, retrieval finds relevant internal knowledge, the LLM generates a grounded answer back to the user">
-      <defs>
-        <marker id="ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="var(--accent)"/></marker>
-      </defs>
-      <g font-family="Inter, sans-serif" text-anchor="middle">
-        <!-- nodes -->
-        <g>
-          <rect x="6" y="40" width="100" height="56" rx="12" fill="var(--paper)" stroke="var(--line)" stroke-width="1.5"/>
-          <text x="56" y="66" font-size="13" font-weight="600" fill="var(--ink)">User</text>
-          <text x="56" y="83" font-size="10.5" fill="var(--ink3)">onboarding team</text>
+  <div class="flow">
+    <svg viewBox="0 0 760 140" role="img" aria-label="User query, retrieval from internal knowledge, relevant context, LLM, grounded answer with sources">
+      <defs><marker id="a1" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="var(--azure)"/></marker></defs>
+      <g font-family="Inter, Arial, sans-serif" text-anchor="middle">
+        <rect x="262" y="2" width="136" height="24" rx="6" fill="none" stroke="var(--ink3)" stroke-dasharray="4 3"/>
+        <text x="330" y="18" font-size="10.5" fill="var(--ink2)">product · technical · deployment docs</text>
+        <line x1="330" y1="27" x2="330" y2="38" stroke="var(--ink3)" stroke-width="1.5"/>
+        <rect x="6" y="40" width="100" height="54" rx="12" fill="var(--paper)" stroke="var(--line)" stroke-width="1.5"/>
+        <text x="56" y="64" font-size="13" font-weight="600" fill="var(--ink)">User</text><text x="56" y="81" font-size="10.5" fill="var(--ink3)">onboarding team</text>
+        <rect x="136" y="40" width="108" height="54" rx="12" fill="var(--paper)" stroke="var(--line)" stroke-width="1.5"/>
+        <text x="190" y="64" font-size="13" font-weight="600" fill="var(--ink)">Query</text><text x="190" y="81" font-size="10.5" fill="var(--ink3)">plain language</text>
+        <rect x="274" y="40" width="112" height="54" rx="12" fill="var(--azure-50)" stroke="var(--azure)" stroke-width="1.5"/>
+        <text x="330" y="64" font-size="13" font-weight="600" fill="var(--azure-600)">Retrieval</text><text x="330" y="81" font-size="10.5" fill="var(--azure-600)">search internal KB</text>
+        <rect x="416" y="40" width="112" height="54" rx="12" fill="var(--paper)" stroke="var(--line)" stroke-width="1.5"/>
+        <text x="472" y="64" font-size="13" font-weight="600" fill="var(--ink)">Context</text><text x="472" y="81" font-size="10.5" fill="var(--ink3)">top-matched chunks</text>
+        <rect x="558" y="40" width="80" height="54" rx="12" fill="var(--azure-50)" stroke="var(--azure)" stroke-width="1.5"/>
+        <text x="598" y="64" font-size="13" font-weight="600" fill="var(--azure-600)">LLM</text><text x="598" y="81" font-size="10.5" fill="var(--azure-600)">generate</text>
+        <rect x="668" y="40" width="86" height="54" rx="12" fill="var(--emerald-50)" stroke="var(--emerald)" stroke-width="1.5"/>
+        <text x="711" y="62" font-size="12.5" font-weight="600" fill="var(--emerald)">Grounded</text><text x="711" y="77" font-size="12.5" font-weight="600" fill="var(--emerald)">answer</text><text x="711" y="89" font-size="9.5" fill="var(--emerald)">+ sources</text>
+        <g stroke="var(--azure)" stroke-width="1.6" fill="none" marker-end="url(#a1)">
+          <line x1="108" y1="67" x2="133" y2="67"/><line x1="246" y1="67" x2="271" y2="67"/><line x1="388" y1="67" x2="413" y2="67"/><line x1="530" y1="67" x2="555" y2="67"/><line x1="640" y1="67" x2="665" y2="67"/>
+          <path d="M711 96 C711 120, 56 120, 56 97"/>
         </g>
-        <g>
-          <rect x="136" y="40" width="108" height="56" rx="12" fill="var(--paper)" stroke="var(--line)" stroke-width="1.5"/>
-          <text x="190" y="66" font-size="13" font-weight="600" fill="var(--ink)">Query</text>
-          <text x="190" y="83" font-size="10.5" fill="var(--ink3)">natural language</text>
-        </g>
-        <g>
-          <rect x="274" y="40" width="112" height="56" rx="12" fill="var(--accent-soft)" stroke="var(--accent)" stroke-width="1.5"/>
-          <text x="330" y="66" font-size="13" font-weight="600" fill="var(--accent-ink)">Retrieval</text>
-          <text x="330" y="83" font-size="10.5" fill="var(--accent-ink)">search internal KB</text>
-        </g>
-        <g>
-          <rect x="416" y="40" width="112" height="56" rx="12" fill="var(--paper)" stroke="var(--line)" stroke-width="1.5"/>
-          <text x="472" y="66" font-size="13" font-weight="600" fill="var(--ink)">Relevant context</text>
-          <text x="472" y="83" font-size="10.5" fill="var(--ink3)">top-matched chunks</text>
-        </g>
-        <g>
-          <rect x="558" y="40" width="80" height="56" rx="12" fill="var(--accent-soft)" stroke="var(--accent)" stroke-width="1.5"/>
-          <text x="598" y="66" font-size="13" font-weight="600" fill="var(--accent-ink)">LLM</text>
-          <text x="598" y="83" font-size="10.5" fill="var(--accent-ink)">generate</text>
-        </g>
-        <g>
-          <rect x="668" y="40" width="86" height="56" rx="12" fill="var(--mint-soft)" stroke="var(--mint)" stroke-width="1.5"/>
-          <text x="711" y="62" font-size="12.5" font-weight="600" fill="var(--mint)">Grounded</text>
-          <text x="711" y="78" font-size="12.5" font-weight="600" fill="var(--mint)">answer</text>
-          <text x="711" y="91" font-size="9.5" fill="var(--mint)">+ sources</text>
-        </g>
-        <!-- arrows -->
-        <g stroke="var(--accent)" stroke-width="1.6" fill="none" marker-end="url(#ah)">
-          <line x1="108" y1="68" x2="133" y2="68"/>
-          <line x1="246" y1="68" x2="271" y2="68"/>
-          <line x1="388" y1="68" x2="413" y2="68"/>
-          <line x1="530" y1="68" x2="555" y2="68"/>
-          <line x1="640" y1="68" x2="665" y2="68"/>
-          <path d="M711 98 C711 124, 56 124, 56 99"/>
-        </g>
-        <text x="380" y="146" font-size="10.5" fill="var(--ink3)">answer returned to user · follow-ups refine the next query</text>
-        <!-- KB -->
-        <rect x="262" y="4" width="136" height="24" rx="6" fill="none" stroke="var(--line)" stroke-dasharray="4 3"/>
-        <text x="330" y="20" font-size="10.5" fill="var(--ink2)">product · technical · deployment docs</text>
-        <line x1="330" y1="29" x2="330" y2="38" stroke="var(--line)" stroke-width="1.5"/>
+        <text x="380" y="134" font-size="10.5" fill="var(--ink3)">answer returned to the user · follow-ups refine the next query</text>
       </g>
     </svg>
-    <div class="cap">General RAG architecture. Section 04 covers which parts I designed.</div>
   </div>
-</section>
 
-<section>
-  <div class="label"><span class="num">04</span><h2>My role as Product Manager</h2></div>
-  <p style="margin-bottom:10px">I went beyond writing requirements and owned the problem, the experience design and the quality bar:</p>
+  <div class="sub">What I owned as PM</div>
   <div class="role">
     <div><b>Found the problem</b>Spotted the onboarding bottleneck and framed it as an AI opportunity.</div>
-    <div><b>Defined the workflow</b>Set the user journey and the success criteria the agent had to meet.</div>
+    <div><b>Defined the workflow</b>Set the user journey and the success criteria.</div>
     <div><b>Structured the knowledge</b>Shaped how internal knowledge is organised and retrieved.</div>
     <div><b>Designed the prompts</b>Wrote the prompts and evaluated whether answers held up.</div>
-    <div><b>Iterated with users</b>Refined the workflow based on the questions people actually asked.</div>
-    <div><b>Drove outcomes</b>Focused on adoption and accuracy, and on cutting onboarding effort.</div>
+    <div><b>Iterated with users</b>Refined the tool based on the questions people actually asked.</div>
+    <div><b>Drove outcomes</b>Focused on adoption, accuracy and less onboarding effort.</div>
   </div>
-</section>
 
-<div class="pb"></div>
-
-<section>
-  <div class="label"><span class="num">05</span><h2>Impact</h2></div>
+  <div class="sub">Impact</div>
   <div class="impact">
     <div><b>Less dependency</b>Fewer repeat questions to experienced team members</div>
     <div><b>Faster search</b>Less time hunting across fragmented docs</div>
-    <div><b>Faster onboarding</b>Smoother path through healthcare-system deployments</div>
-    <div><b>Reusable</b>An AI capability that extends to other onboarding and deployment workflows</div>
+    <div><b>Faster onboarding</b>Smoother healthcare-system deployments</div>
+    <div><b>Reusable</b>Extends to other onboarding and deployment workflows</div>
   </div>
-  <p style="margin-top:8px;font-size:12px;color:var(--ink3)">Impact is described qualitatively. The measurement framework below is proposed.</p>
-</section>
 
-<section>
-  <div class="label"><span class="num">06</span><h2>How I evaluate it</h2></div>
-  <table>
-    <thead><tr><th>Metric</th><th>What it tells us</th></tr></thead>
-    <tbody>
-      <tr><td>Retrieval relevance <span class="tag">Proposed</span></td><td>Is the right document chunk being pulled for real onboarding questions?</td></tr>
-      <tr><td>Answer groundedness <span class="tag">Proposed</span></td><td>Is each answer accurate and supported by the retrieved source, with no hallucinated steps?</td></tr>
-      <tr><td>Task completion <span class="tag">Proposed</span></td><td>Did the user resolve their question without escalating to an expert?</td></tr>
-      <tr><td>Time-to-answer <span class="tag">Proposed</span></td><td>Minutes to a usable answer vs. searching docs or waiting for a colleague</td></tr>
-      <tr><td>Onboarding time <span class="tag">Proposed</span></td><td>End-to-end time to ramp a team member onto a new health-system deployment</td></tr>
-      <tr><td>Repeat escalations <span class="tag">Proposed</span></td><td>Drop in repetitive questions reaching subject-matter experts</td></tr>
-      <tr><td>Adoption &amp; CSAT <span class="tag">Proposed</span></td><td>Weekly active users, return usage, thumbs-up rate on answers</td></tr>
-    </tbody>
-  </table>
-</section>
+  <div class="sub">How I evaluate it</div>
+  <div class="evals">
+    <span><b>Proposed</b>Retrieval relevance</span><span><b>Proposed</b>Answer groundedness</span><span><b>Proposed</b>Task completion</span><span><b>Proposed</b>Time-to-answer</span><span><b>Proposed</b>Repeat escalations</span><span><b>Proposed</b>Adoption &amp; CSAT</span>
+  </div>
+</article>
 
-<section>
-  <div class="label"><span class="num">07</span><h2>Product learnings</h2></div>
+<!-- ================= CASE 2 ================= -->
+<article class="case" id="llm">
+  <div class="case-head">
+    <div class="badge">02</div>
+    <div>
+      <div class="t">Clinical workflow · LLM-powered tool</div>
+      <h2>An LLM-powered clinical workflow that clinicians can trust</h2>
+      <p class="lede">Designing an AI-assisted clinical decision-support workflow from first principles: the prompts, the evaluation criteria and the clinician interactions. There was no existing playbook, and trust and safety really mattered.</p>
+      <div class="tags"><span class="tag">LLM workflows</span><span class="tag">Prompt engineering</span><span class="tag">Evaluation design</span><span class="tag">Human-in-the-loop</span></div>
+    </div>
+  </div>
+
+  <div class="grid">
+    <div class="box">
+      <h4>Problem</h4>
+      <p>An LLM is only useful in a clinical setting if its output is reliable, easy to check, and fits how clinicians already work. A capable model was not enough. The workflow around it had to make the output trustworthy and usable.</p>
+    </div>
+    <div class="box why">
+      <h4>The PM challenge</h4>
+      <p>Define what "good" looks like before shipping: what the model should do, how to tell when its output is right, and where the clinician stays in control. Then build the prompts, checks and interactions around those answers.</p>
+    </div>
+  </div>
+
+  <div class="flow">
+    <svg viewBox="0 0 760 130" role="img" aria-label="Clinical input, structured prompt, LLM, evaluation checks, clinician review, output in workflow, with feedback loop to prompt">
+      <defs><marker id="a2" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="var(--azure)"/></marker></defs>
+      <g font-family="Inter, Arial, sans-serif" text-anchor="middle">
+        <rect x="6" y="20" width="104" height="54" rx="12" fill="var(--paper)" stroke="var(--line)" stroke-width="1.5"/>
+        <text x="58" y="44" font-size="13" font-weight="600" fill="var(--ink)">Clinical input</text><text x="58" y="61" font-size="10.5" fill="var(--ink3)">case context</text>
+        <rect x="136" y="20" width="110" height="54" rx="12" fill="var(--azure-50)" stroke="var(--azure)" stroke-width="1.5"/>
+        <text x="191" y="44" font-size="13" font-weight="600" fill="var(--azure-600)">Prompt design</text><text x="191" y="61" font-size="10.5" fill="var(--azure-600)">structured, scoped</text>
+        <rect x="272" y="20" width="84" height="54" rx="12" fill="var(--azure-50)" stroke="var(--azure)" stroke-width="1.5"/>
+        <text x="314" y="44" font-size="13" font-weight="600" fill="var(--azure-600)">LLM</text><text x="314" y="61" font-size="10.5" fill="var(--azure-600)">draft output</text>
+        <rect x="382" y="20" width="112" height="54" rx="12" fill="var(--topaz-50)" stroke="var(--topaz)" stroke-width="1.5"/>
+        <text x="438" y="44" font-size="13" font-weight="600" fill="var(--topaz)">Eval criteria</text><text x="438" y="61" font-size="10.5" fill="var(--topaz)">quality checks</text>
+        <rect x="520" y="20" width="110" height="54" rx="12" fill="var(--paper)" stroke="var(--line)" stroke-width="1.5"/>
+        <text x="575" y="44" font-size="13" font-weight="600" fill="var(--ink)">Clinician</text><text x="575" y="61" font-size="10.5" fill="var(--ink3)">reviews &amp; decides</text>
+        <rect x="656" y="20" width="98" height="54" rx="12" fill="var(--emerald-50)" stroke="var(--emerald)" stroke-width="1.5"/>
+        <text x="705" y="44" font-size="12.5" font-weight="600" fill="var(--emerald)">In workflow</text><text x="705" y="61" font-size="10.5" fill="var(--emerald)">trusted output</text>
+        <g stroke="var(--azure)" stroke-width="1.6" fill="none" marker-end="url(#a2)">
+          <line x1="112" y1="47" x2="133" y2="47"/><line x1="248" y1="47" x2="269" y2="47"/><line x1="358" y1="47" x2="379" y2="47"/><line x1="496" y1="47" x2="517" y2="47"/><line x1="632" y1="47" x2="653" y2="47"/>
+          <path d="M575 76 C575 108, 191 108, 191 77"/>
+        </g>
+        <text x="383" y="124" font-size="10.5" fill="var(--ink3)">feedback from evals and clinicians refines the prompts</text>
+      </g>
+    </svg>
+  </div>
+
+  <div class="sub">What I owned as PM</div>
+  <div class="role">
+    <div><b>Framed the use case</b>Decided where AI assistance adds value in the clinical workflow, and where it shouldn't.</div>
+    <div><b>Designed the prompts</b>Used prompt engineering to make outputs consistent and scoped to the task.</div>
+    <div><b>Defined evaluation</b>Set the criteria for a "good" output and the checks before it reaches a clinician.</div>
+    <div><b>Designed the interaction</b>Shaped how clinicians see, verify and act on AI output, with a human in the loop.</div>
+    <div><b>Tested assumptions</b>Separated what was true from what we had assumed, using real cases.</div>
+    <div><b>Balanced trust &amp; speed</b>Weighed usefulness against safety in a regulated domain.</div>
+  </div>
+
+  <div class="sub">Impact</div>
+  <div class="impact">
+    <div><b>Trustworthy</b>Output clinicians can verify before acting on it</div>
+    <div><b>Consistent</b>Structured prompts made outputs more predictable</div>
+    <div><b>Measurable</b>Clear eval criteria defined what "good" means</div>
+    <div><b>Workflow-fit</b>AI built into how clinicians already work</div>
+  </div>
+
+  <div class="sub">How I evaluate it</div>
+  <div class="evals">
+    <span><b>Proposed</b>Output accuracy vs. expert review</span><span><b>Proposed</b>Clinician acceptance / edit rate</span><span><b>Proposed</b>Error &amp; unsafe-output rate</span><span><b>Proposed</b>Time saved per case</span><span><b>Proposed</b>Repeat usage</span>
+  </div>
+</article>
+
+<!-- ================= CASE 3 ================= -->
+<article class="case" id="demo">
+  <div class="case-head">
+    <div class="badge">03</div>
+    <div>
+      <div class="t">Go-to-market · Automation</div>
+      <h2>Automating product demos and sales decks</h2>
+      <p class="lede">I took a manual, repetitive job and automated it: building tailored product demos and decks for each prospect. AI now generates them from product knowledge and customer context, ready for a quick review.</p>
+      <div class="tags"><span class="tag">Workflow automation</span><span class="tag">LLM generation</span><span class="tag">Templates</span><span class="tag">GTM enablement</span></div>
+    </div>
+  </div>
+
+  <div class="grid">
+    <div class="box">
+      <h4>Problem</h4>
+      <p>Every customer conversation needed a demo and deck tailored to that health system's use case. Building them by hand was slow and repetitive, and quality and messaging varied depending on who made them.</p>
+    </div>
+    <div class="box why">
+      <h4>The opportunity</h4>
+      <p>Most of each deck was the same: product facts, the value story, the demo flow. What changed was the customer context. AI could combine the two on demand, so people could spend their time on the conversation instead of the slides.</p>
+    </div>
+  </div>
+
+  <div class="flow">
+    <svg viewBox="0 0 760 130" role="img" aria-label="Customer context and product knowledge feed an AI generator that produces a demo script and deck, which is reviewed then delivered">
+      <defs><marker id="a3" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="var(--azure)"/></marker></defs>
+      <g font-family="Inter, Arial, sans-serif" text-anchor="middle">
+        <rect x="6" y="6" width="130" height="46" rx="12" fill="var(--paper)" stroke="var(--line)" stroke-width="1.5"/>
+        <text x="71" y="27" font-size="12.5" font-weight="600" fill="var(--ink)">Customer context</text><text x="71" y="42" font-size="10.5" fill="var(--ink3)">use case · stakeholders</text>
+        <rect x="6" y="70" width="130" height="46" rx="12" fill="var(--paper)" stroke="var(--line)" stroke-width="1.5"/>
+        <text x="71" y="91" font-size="12.5" font-weight="600" fill="var(--ink)">Product knowledge</text><text x="71" y="106" font-size="10.5" fill="var(--ink3)">features · proof points</text>
+        <rect x="184" y="34" width="130" height="54" rx="12" fill="var(--azure-50)" stroke="var(--azure)" stroke-width="1.5"/>
+        <text x="249" y="58" font-size="13" font-weight="600" fill="var(--azure-600)">AI generator</text><text x="249" y="75" font-size="10.5" fill="var(--azure-600)">prompts + templates</text>
+        <rect x="362" y="6" width="118" height="46" rx="12" fill="var(--paper)" stroke="var(--line)" stroke-width="1.5"/>
+        <text x="421" y="27" font-size="12.5" font-weight="600" fill="var(--ink)">Demo script</text><text x="421" y="42" font-size="10.5" fill="var(--ink3)">tailored flow</text>
+        <rect x="362" y="70" width="118" height="46" rx="12" fill="var(--paper)" stroke="var(--line)" stroke-width="1.5"/>
+        <text x="421" y="91" font-size="12.5" font-weight="600" fill="var(--ink)">Pitch deck</text><text x="421" y="106" font-size="10.5" fill="var(--ink3)">on-brand slides</text>
+        <rect x="528" y="34" width="100" height="54" rx="12" fill="var(--topaz-50)" stroke="var(--topaz)" stroke-width="1.5"/>
+        <text x="578" y="58" font-size="13" font-weight="600" fill="var(--topaz)">Quick review</text><text x="578" y="75" font-size="10.5" fill="var(--topaz)">human check</text>
+        <rect x="660" y="34" width="94" height="54" rx="12" fill="var(--emerald-50)" stroke="var(--emerald)" stroke-width="1.5"/>
+        <text x="707" y="58" font-size="13" font-weight="600" fill="var(--emerald)">Customer</text><text x="707" y="75" font-size="10.5" fill="var(--emerald)">meeting-ready</text>
+        <g stroke="var(--azure)" stroke-width="1.6" fill="none" marker-end="url(#a3)">
+          <path d="M138 29 C160 29, 160 52, 181 55"/><path d="M138 93 C160 93, 160 70, 181 67"/>
+          <path d="M316 55 C338 52, 338 29, 359 29"/><path d="M316 67 C338 70, 338 93, 359 93"/>
+          <path d="M482 29 C504 29, 504 52, 525 55"/><path d="M482 93 C504 93, 504 70, 525 67"/>
+          <line x1="630" y1="61" x2="657" y2="61"/>
+        </g>
+      </g>
+    </svg>
+  </div>
+
+  <div class="sub">What I owned as PM</div>
+  <div class="role">
+    <div><b>Spotted the waste</b>Noticed the repetitive manual prep behind every demo and deck.</div>
+    <div><b>Separated fixed from variable</b>Split each deck into reusable product content and the parts tailored to each customer.</div>
+    <div><b>Built the automation</b>Set up an AI workflow that generates the demo script and deck from those inputs.</div>
+    <div><b>Kept quality high</b>Built in templates and a human review step so the output stays on-brand and accurate.</div>
+    <div><b>Drove adoption</b>Made it the default way the team prepared for customer conversations.</div>
+    <div><b>Made it reusable</b>Designed it so new products and use cases slot into the same pipeline.</div>
+  </div>
+
+  <div class="sub">Impact</div>
+  <div class="impact">
+    <div><b>Faster prep</b>Far less manual effort per customer demo and deck</div>
+    <div><b>Consistent story</b>Same accurate messaging, whoever presents</div>
+    <div><b>Tailored at scale</b>Every prospect gets material built for their use case</div>
+    <div><b>Time back</b>More time for the customer, less for formatting</div>
+  </div>
+
+  <div class="sub">How I evaluate it</div>
+  <div class="evals">
+    <span><b>Proposed</b>Prep time per deck / demo</span><span><b>Proposed</b>Edits needed before use</span><span><b>Proposed</b>Team adoption</span><span><b>Proposed</b>Demo-to-next-step conversion</span>
+  </div>
+</article>
+
+<p class="note">Impact is described qualitatively. Metrics marked "Proposed" are how I would measure each tool. Internal details are generalised and no confidential data is shown.</p>
+
+<!-- ================= COMMON ================= -->
+<section id="learnings">
+  <h2 class="section-title">What these taught me</h2>
+  <p class="section-sub">Patterns that held across all three builds.</p>
   <div class="learn">
-    <div><b>Context beats cleverness.</b> AI is only useful when it is grounded in the right context.</div>
-    <div><b>Retrieval is half the product.</b> Retrieval quality can matter as much as model quality.</div>
-    <div><b>Eval on real tasks.</b> Test against the questions users actually ask, not model benchmarks.</div>
-    <div><b>Fit the workflow.</b> The best AI tools fit into how teams already work and don't ask them to change habits.</div>
+    <div><b>Context beats cleverness.</b> AI is only as useful as the context it's grounded in, whether that's documents, cases or customer data.</div>
+    <div><b>The workflow is the product.</b> The model is one part. Retrieval, prompts, review steps and UX decide whether people use it.</div>
+    <div><b>Define "good" before you build.</b> Evals based on real user tasks matter more than benchmark scores.</div>
+    <div><b>Fit how people already work.</b> Adoption comes from removing steps, not from adding a new tool to learn.</div>
   </div>
 </section>
 
-<section class="why">
-  <h2>Why this matters for Razorpay</h2>
+<section class="rzp" id="razorpay">
+  <h2>Why this matters for Razorpay's Central AI team</h2>
+  <p>The same approach carries over: find a high-leverage workflow, build the AI-native fix, connect it to the right knowledge and tools, and measure adoption.</p>
   <div class="g">
-    <div><b>Spot high-leverage workflows</b>Find where fragmented knowledge or repetitive work slows teams down, like merchant onboarding, support, or risk reviews.</div>
-    <div><b>Build AI-native</b>Go from problem to working agent quickly instead of waiting for a full spec.</div>
-    <div><b>Connect knowledge &amp; tools</b>Ground agents in internal data, docs and systems so they give trustworthy answers.</div>
-    <div><b>Drive measurable adoption</b>Define evals and outcome metrics up front, then scale what works across teams.</div>
+    <div><i>FIND</i><b>High-leverage workflows</b>For example, merchant onboarding, support triage, risk reviews, or sales enablement for Razorpay's products.</div>
+    <div><i>BUILD</i><b>AI-native, fast</b>Go from problem to working agent or automation without waiting for a full spec.</div>
+    <div><i>CONNECT</i><b>Knowledge, data &amp; tools</b>Ground agents in internal docs, systems and APIs so the answers can be trusted.</div>
+    <div><i>MEASURE</i><b>Adoption &amp; impact</b>Define evals and outcome metrics up front, then scale what works across teams.</div>
   </div>
 </section>
 
-<div class="foot"><span>Isha · AI Product Manager candidate · Central AI, Razorpay</span><span>Internal details generalised. No confidential data shown.</span></div>
+<footer>
+  <span>Isha · AI Product Manager candidate · Central AI, Razorpay</span>
+  <button class="print" onclick="window.print()">Save as PDF</button>
+</footer>
+
 </main>
 </body>
 </html>
